@@ -1,0 +1,10 @@
+ignore-file.txt
+
+Dataset/
+result/
+Config_File/
+.idea/
+backup/
+
+gcn_model.pt
+model.pt
