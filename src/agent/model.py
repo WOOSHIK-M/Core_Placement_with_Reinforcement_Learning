@@ -1,15 +1,34 @@
 import math
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+
 from torch.nn.parameter import Parameter
 
 
-class GraphConvolution(nn.Module):
+class GraphConv(nn.Module):
+    def __init__(self, n_features: int, dropout: float = 0.5):
+        super(GraphConv, self).__init__()
+
+        self.gc1 = GraphConvolutionLayer(n_features, 32)
+        self.gc2 = GraphConvolutionLayer(32, 16)
+        self.gc3 = GraphConvolutionLayer(16, 1)
+
+        self.dropout = dropout
+
+    def forward(self, x, adj):
+        x = F.dropout(F.relu(self.gc1(x, adj)), self.dropout, training=self.training)
+        x = F.dropout(F.relu(self.gc2(x, adj)), self.dropout, training=self.training)
+        x = F.relu(self.gc3(x, adj))
+        return x.squeeze()
+
+
+class GraphConvolutionLayer(nn.Module):
     """
     Simple GCN layer
     """
-    def __init__(self, in_features, out_features, bias=True, init='xavier'):
-        super(GraphConvolution, self).__init__()
+    def __init__(self, in_features: int, out_features: int, bias=True, init='xavier'):
+        super(GraphConvolutionLayer, self).__init__()
 
         self.in_features = in_features
         self.out_features = out_features

@@ -1,3 +1,7 @@
+"""
+Note:
+    The customized community detection algorithm is currently not compatible with that code.
+"""
 import networkx as nx
 import numpy as np
 import copy
@@ -5,8 +9,6 @@ import community as lvcm
 from itertools import permutations
 import matplotlib.pyplot as plt
 import matplotlib.cm as cmm
-
-import Code.Utils as utils
 
 
 def buildG(adjmat):
@@ -17,7 +19,7 @@ def buildG(adjmat):
         for dst, weight in enumerate(connected_to_cores):
             if weight != 0:
                 G.add_edge(int(src), int(dst), weight=float(weight))
-
+                
     return G
 
 
@@ -299,128 +301,3 @@ def CCD(config):
             NewChipPos[mem] = chipidx + 1
 
     config.params_dict['assignedchipidx'] = NewChipPos
-
-    # # Make New Index of Members
-    # NewPos = np.zeros(lut.shape[1], dtype=np.int) - 1
-    # for ChipIdx, Comm in enumerate(PlacedChipData):
-    #     for core_idx, mem in enumerate(Comm):
-    #         NewPos[mem] = int(ChipIdx * max_member_num + core_idx)
-    #
-    # # Save New LUT
-    # new_lut = np.zeros(lut.shape, dtype=np.int)
-    # for pre, post in enumerate(NewPos):
-    #     if post != -1:
-    #         new_lut[:, post] = lut[:, pre]
-    #
-    # for idx1, line in enumerate(new_lut):
-    #     for idx2, pre in enumerate(line):
-    #         if pre != 0:
-    #             new_lut[idx1, idx2] = NewPos[pre - 1] + 1
-    #
-    # NewA = utils.lut_to_adjmat(config, new_lut)[0]
-    # ModA = np.zeros([comm_num, comm_num], dtype=np.int)
-    # for i in range(comm_num):
-    #     for j in range(comm_num):
-    #         if i != j:
-    #             p = NewA[i * max_member_num:(i + 1) * max_member_num, j * max_member_num:(j + 1) * max_member_num]
-    #             ModA[i, j] = np.sum(p)
-    #
-    # config.params_dict['lut'] = new_lut.T - 1
-    #
-    # print("\n==>  End DETECTING COMMUNITIES ...\n")
-    #
-    # return np.transpose(new_lut) - 1, new_lut
-
-
-# # draw the partitioned graph
-'''
-    pos = nx.spring_layout(G)
-    # color the nodes according to their partition
-    cmap = colormp.get_cmap('viridis', max(partition.values()) + 1)
-    nx.draw_networkx_nodes(G, pos, partition.keys(), node_size=40, cmap=cmap, node_color=list(partition.values()))
-    nx.draw_networkx_edges(G, pos, alpha=0.5)
-    plt.show()
-'''
-
-# # Plot Modularity Curve
-# plt.subplots_adjust(hspace=0.5, wspace=0.3)
-# plt.plot(list(range(1, len(log_m) + 1)), log_m)
-# plt.xlabel('step')
-# plt.ylabel('modularity')
-# plt.title("unweighted")
-# plt.savefig("Q_curve.pdf")
-#
-# """ Graph G Plot """
-# pos = nx.kamada_kawai_layout(G)
-# fig = plt.figure(figsize=(7, 6))
-# node_size = 100
-# node_color_list = []
-# # max_k, 즉 Modularity 가 가장 높은 지점의 Community k 별로 색깔 설정
-# # node_color_list.append(~~~)
-# im = nx.draw_networkx_nodes(G, pos, node_color=node_color_list, node_size=node_size)
-# nx.draw_networkx_edges(G, pos)
-# nx.draw_networkx_labels(G, pos, font_size=10, font_color="black")
-# plt.xticks([])
-# plt.yticks([])
-# plt.show()
-
-# FinalComp = runNsizeCom(BestComp, adjmat)
-# # Make New Index of Members
-# new_pos = np.zeros(lut.shape[1], dtype=np.int)
-# for chip_idx, cm in enumerate(FinalComp):
-#     for core_idx, mem in enumerate(cm):
-#         new_pos[mem] = int(chip_idx * max_member_num + core_idx)
-#
-# # Save New LUT
-# new_lut = np.zeros(lut.shape, dtype=np.int)
-# for pre, post in enumerate(new_pos):
-#     new_lut[:, post] = lut[:, pre]
-# for idx1, line in enumerate(new_lut):
-#     for idx2, pre in enumerate(line):
-#         if pre != 0:
-#             new_lut[idx1, idx2] = new_pos[pre] + 1
-
-# TEST LUT
-# lut = np.zeros([512, 10])
-# lut[:64, 0] = 5
-# lut[:64, 1] = 5
-# lut[:64, 2] = 5
-# lut[:64, 3] = 5
-#
-# lut[:16, 4] = 6
-# # lut[:32, 5] = 5
-#
-# lut[:64, 5] = 7
-# lut[64:128, 5] = 8
-# lut[128:192, 5] = 9
-# lut[192:256, 5] = 10
-
-# partition2 = lvcm.induced_graph(partition, G, weight='weight')          # partition으로 나눠진 graph를 return
-"""
-    Produce the graph where nodes are the communities
-
-    there is a link of weight w between communities if the sum of the weights of the links between their elements is w
-"""
-
-# partition3 = lvcm.generate_dendrogram(G, part_init=None, weight='weight', resolution=1.0, randomize=None, random_state=None)
-"""
-    Find communities in the graph and return the associated dendrogram
-
-    A dendrogram is a tree and each level is a partition of the graph nodes.
-    Level 0 is the first partition, which contains the smallest communities,
-    and the best is len(dendrogram) - 1. The higher the level is, the bigger are the communities
-"""
-
-# partition4 = lvcm.partition_at_level(partition3, 1)
-"""
-    Return the partition of the nodes at the given level
-
-    A dendrogram is a tree and each level is a partition of the graph nodes.
-    Level 0 is the first partition, which contains the smallest communities,
-    and the best is len(dendrogram) - 1. The higher the level is, the bigger are the communities
-"""
-
-# MOD = lvcm.modularity(partition, G, weight='weight')
-"""
-    Compute the modularity of a partition of a graph
-"""

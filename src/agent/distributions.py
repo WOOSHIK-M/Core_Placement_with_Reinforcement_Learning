@@ -43,12 +43,11 @@ class FixedNormal(torch.distributions.Normal):
 
 
 class DiagGaussian(nn.Module):
-    def __init__(self, num_inputs, num_outputs, x_range, thr_std):
+    def __init__(self, num_inputs, num_outputs, x_range):
         super(DiagGaussian, self).__init__()
 
         self.x_range = x_range
         self.multiplex = num_outputs
-        self.thr_std = thr_std
 
         hidden_layer = 512
         self.read_out = nn.Sequential(
@@ -62,13 +61,7 @@ class DiagGaussian(nn.Module):
         self.fc_std = nn.Sequential(
             nn.Linear(hidden_layer, num_outputs),
         )
-
         self.init_w()
-
-        # with torch.no_grad():
-        #     self.read_out[-1].weight *= 0.1
-        #     self.fc_mean[-1].weight *= 0.1
-        #     self.fc_std[-1].weight *= 0.1
 
     def init_ws(self, model):
         for name, param in model.named_parameters():
@@ -76,10 +69,6 @@ class DiagGaussian(nn.Module):
                 nn.init.constant_(param, 0.0)
             if param.dim() > 1 and 'weight' in name:
                 nn.init.orthogonal_(param)
-                # nn.init.kaiming_normal_(param)
-                # nn.init.xavier_normal_(param)
-                # nn.init.kaiming_uniform_(param)
-                # nn.init.xavier_uniform_(param)
 
     def init_w(self):
         self.read_out.apply(self.init_ws)
@@ -90,7 +79,7 @@ class DiagGaussian(nn.Module):
         x = torch.tanh(self.read_out(x))
 
         action_mean = torch.tanh(self.fc_mean(x)) * self.x_range
-        action_std = F.softplus(self.fc_std(x)) + self.thr_std
+        action_std = F.softplus(self.fc_std(x))
 
         return FixedNormal(action_mean, torch.sqrt(action_std))
 
