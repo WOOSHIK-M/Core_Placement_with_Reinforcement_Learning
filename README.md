@@ -9,7 +9,7 @@
 * Simulated Annealing
 * Reinforcement Learning
 
-## Note:
+## AS-IS:
 * Mapping algorithm for single-chip system is available.
 * Community detection code is uploaded, but it is currently not compatible this code.
 * Execution for multi-chip system is not yet uploaded.
